@@ -1,0 +1,32 @@
+version: '3'
+#Password: noubissie
+services:
+  mars-pictures:
+    container_name: mars-pictures
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - .:/home/node/app
+    command: sh -c "npm run develop"
+    depends_on:
+      - reverse-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.home.rule=Host(`app.mars-pictures.local`)"
+      - "traefik.port=8000"
+
+  reverse-proxy:
+    restart: always
+    image: traefik:v2.0
+    ports:
+    - "443:443"
+    - "80:80"
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - ./traefik/traefik.toml:/etc/traefik/traefik.toml
+    labels:
+    - "traefik.http.routers.api.rule=Host(`traefik.home.local`)"
+    - "traefik.http.routers.api.service=api@internal"
+    - "traefik.http.routers.api.entrypoints=http"
