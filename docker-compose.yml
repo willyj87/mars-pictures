@@ -12,10 +12,49 @@ services:
     command: sh -c "npm run develop"
     depends_on:
       - reverse-proxy
+      - strapi
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.home.rule=Host(`app.mars-pictures.local`)"
+      - "traefik.http.routers.app.rule=Host(`app.mars-pictures.local`)"
       - "traefik.port=8000"
+    networks:
+     - default
+    
+  strapi:
+    image: strapi/strapi
+    environment:
+      DATABASE_CLIENT: postgres
+      DATABASE_NAME: strapi-mars
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: strapi
+      DATABASE_PASSWORD: strapi
+    volumes:
+      - ../strapi-mars/app:/srv/app
+    ports:
+      - '1337:1337'
+    depends_on:
+      - postgres
+      - reverse-proxy
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.strapi.rule=Host(`strapi.mars-pictures.local`)"
+    - "traefik.port=1337"
+    networks:
+     - default
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: strapi-mars
+      POSTGRES_USER: strapi
+      POSTGRES_PASSWORD: strapi
+    depends_on:
+      - reverse-proxy
+    volumes:
+      - ../data:/var/lib/postgresql/data
+    networks:
+     - default
 
   reverse-proxy:
     restart: always
@@ -30,3 +69,10 @@ services:
     - "traefik.http.routers.api.rule=Host(`traefik.home.local`)"
     - "traefik.http.routers.api.service=api@internal"
     - "traefik.http.routers.api.entrypoints=http"
+    networks:
+     - default
+networks:
+  default:
+    name: mars-pictures_default
+    driver: bridge
+  
