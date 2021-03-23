@@ -23,5 +23,20 @@ module.exports = {
         exclude: ['node_modules', '.cache', 'public'],
       },
     },
+    {
+      resolve: 'gatsby-plugin-alias-imports',
+      options: {
+        alias: {
+          '@src': 'src',
+          '@components': 'src/components',
+          '@layouts': 'src/layouts',
+          '@pages': 'src/pages',
+          '@lib': 'src/lib',
+        },
+        extensions: [
+          'js',
+        ],
+      },
+    },
   ],
 };

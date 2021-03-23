@@ -1,9 +1,9 @@
 import axios from 'axios';
 import cmsAuth from './cms-auth';
 
-const nasaURL = process.env.NASA_API_URL;
-const nasaKEY = process.env.NASA_API_KEY;
-const { CMS_URL } = process.env;
+const nasaURL = process.env.GATSBY_NASA_API_URL;
+const nasaKEY = process.env.GATSBY_NASA_API_KEY;
+const { GATSBY_CMS_URL } = process.env;
 
 export const nasaClient = () => {
   const client = axios.create({
@@ -16,11 +16,12 @@ export const nasaClient = () => {
   return client;
 };
 
-export const cmsClient = () => {
+export const cmsClient = async () => {
+  const jwt = await cmsAuth();
   const client = axios.create({
-    baseURL: CMS_URL,
+    baseURL: GATSBY_CMS_URL,
     headers: {
-      Authorization: `Bearer ${cmsAuth()}`,
+      Authorization: `Bearer ${jwt}`,
     },
   });
 

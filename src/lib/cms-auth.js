@@ -1,11 +1,12 @@
 /* eslint-disable no-console */
 import axios from 'axios';
 
-const { CMS_URL } = process.env;
+const { GATSBY_CMS_URL } = process.env;
 
 const cmsAuth = async () => {
-  const { jwt } = await axios.post(`${CMS_URL}/auth/local`, {
-    identifier: 'willyjunior91@gmail.com',
+  console.log('CMS', GATSBY_CMS_URL);
+  const { jwt } = await axios.post(`${GATSBY_CMS_URL}/auth/local`, {
+    identifier: 'noubissiew@gmail.com',
     password: 'Titika01',
   }).then((response) => response.data).catch((error) => console.log('error while connecting to cms: ', error));
   return jwt;
